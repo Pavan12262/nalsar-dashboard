@@ -1,15 +1,24 @@
 {
+  "id": "target-nalsar-app",
   "name": "TARGET NALSAR",
   "short_name": "NALSAR",
   "description": "Personal CLAT exam preparation command center — mock performance, error notebook, study timer, and streak tracker.",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "window-controls-overlay"
+  ],
   "orientation": "portrait-primary",
   "background_color": "#0a0e1a",
   "theme_color": "#0a0e1a",
   "lang": "en",
-  "scope": "./",
-  "categories": ["education", "productivity"],
+  "dir": "ltr",
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "./icons/icon-192.png",
@@ -24,6 +33,21 @@
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "./icons/screenshot-desktop.png",
+      "sizes": "1262x804",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "TARGET NALSAR Study Command Center"
+    },
+    {
+      "src": "./icons/screenshot-mobile.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "TARGET NALSAR Mobile Study Dashboard"
+    }
+  ],
   "prefer_related_applications": false
 }

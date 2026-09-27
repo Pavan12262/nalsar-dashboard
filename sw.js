@@ -3,7 +3,7 @@
  * Caches all app assets so it works offline after first load.
  */
 
-const CACHE_NAME = 'nalsar-v1';
+const CACHE_NAME = 'nalsar-v2';
 
 // All files to cache on install
 const ASSETS_TO_CACHE = [
@@ -28,7 +28,9 @@ const ASSETS_TO_CACHE = [
   './js/sectionalWeakness.js',
   './js/mockSchedule.js',
   './icons/icon-192.png',
-  './icons/icon-512.png'
+  './icons/icon-512.png',
+  './icons/screenshot-desktop.png',
+  './icons/screenshot-mobile.png'
 ];
 
 // Install: cache all assets
