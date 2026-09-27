@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TARGET NALSAR - Personal Exam Command Center</title>
+  <meta name="description" content="Personal exam preparation command center tracking mock performance, error notebook analysis, daily study time, and study streaks.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <!-- PWA: Web App Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- PWA: Theme color for browser chrome -->
+  <meta name="theme-color" content="#0a0e1a">
+
+  <!-- PWA: iOS / Safari support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TARGET NALSAR">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- PWA: Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(() => console.log('[PWA] Service Worker registered'))
+          .catch((err) => console.warn('[PWA] SW registration failed:', err));
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <!-- =====================================================================
+       CINEMATIC NALSAR WELCOME / LANDING SCREEN (REFERENCE-INSPIRED)
+       ===================================================================== -->
+  <aside id="welcomeScreen" class="welcome-screen" aria-label="NALSAR Welcome Screen">
+    <!-- Cinematic Full-screen Background Photo with Subtle Ken Burns Zoom -->
+    <div class="welcome-bg-wrapper">
+      <img src="assets/nalsar-original-bg.webp" alt="NALSAR University of Law" class="welcome-bg-image" id="welcomeBgImg">
+      <div class="welcome-overlay-scrim"></div>
+    </div>
+
+    <!-- Minimal Corner Typography Inspired by Reference -->
+    <div class="welcome-corner welcome-corner-tl" aria-hidden="true">
+      <span class="corner-primary">NALSAR</span>
+      <span class="corner-secondary">HYDERABAD</span>
+    </div>
+
+    <div class="welcome-corner welcome-corner-tr" aria-hidden="true">
+      <span class="corner-primary">DISCIPLINE TODAY</span>
+      <span class="corner-secondary">A BRIGHTER TOMORROW</span>
+      <div class="corner-line"></div>
+    </div>
+
+    <div class="welcome-corner welcome-corner-bl" aria-hidden="true">
+      <span class="corner-primary">LAW</span>
+      <span class="corner-secondary">LEADERSHIP</span>
+      <span class="corner-tertiary">A FAIRER TOMORROW</span>
+    </div>
+
+    <div class="welcome-corner welcome-corner-br" aria-hidden="true">
+      <span class="corner-primary">NALSAR</span>
+      <span class="corner-secondary">HYDERABAD</span>
+      <div class="corner-line"></div>
+    </div>
+
+    <!-- Centered Hero Content -->
+    <div class="welcome-hero-content">
+      <h1 class="welcome-main-title">LOCK IN</h1>
+      <p class="welcome-subtitle">SAME EFFORT. A BIGGER TOMORROW.</p>
+
+      <button type="button" id="welcomeLockInBtn" class="btn-welcome-lockin" aria-label="Lock In and Enter Dashboard">
+        <span class="btn-text">LOCK IN</span>
+        <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Top App Navigation / Header -->
+  <header class="app-header">
+    <div class="container header-inner">
+      <div class="brand-section target-nalsar-brand" id="brandWelcomeTrigger" style="cursor: pointer;" title="View Welcome Screen">
+        <h1 class="brand-title">
+          <span class="target-kicker font-mono">TARGET:</span>
+          <span class="target-main">NALSAR</span>
+        </h1>
+        <div id="currentDateDisplay" class="brand-date font-mono">Loading date...</div>
+      </div>
+
+      <!-- 4 Major Navigation Tabs -->
+      <nav class="nav-pills" role="tablist">
+        <button type="button" class="nav-pill active" data-tab="performance" role="tab" aria-selected="true">PERFORMANCE</button>
+        <button type="button" class="nav-pill" data-tab="sectionals" role="tab" aria-selected="false">SECTIONALS</button>
+        <button type="button" class="nav-pill" data-tab="study" role="tab" aria-selected="false">TIMER</button>
+        <button type="button" class="nav-pill" data-tab="streak" role="tab" aria-selected="false">STREAK</button>
+      </nav>
+
+      <div class="header-actions">
+        <button id="exportDataBtn" class="btn btn-secondary btn-sm" title="Export full backup as JSON">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export Backup
+        </button>
+        <button id="importDataBtn" class="btn btn-secondary btn-sm" title="Import backup from JSON">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Import
+        </button>
+        <input type="file" id="importFileInput" accept=".json" style="display: none;">
+
+        <button id="settingsMenuBtn" class="btn btn-secondary btn-sm" title="Settings and Sample Data">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Resilient Active Session Notification Banner -->
+  <div id="activeSessionBanner" class="active-session-banner">
+    <div class="container active-banner-inner">
+      <div>
+        <span class="active-pulse-dot"></span>
+        <strong id="activeSessionBannerText">Active session in progress...</strong>
+      </div>
+      <button id="bannerStopBtn" class="btn btn-danger btn-sm">Stop & Save Session</button>
+    </div>
+  </div>
+
+  <!-- Prominent CLAT 2027 D-Day Countdown Strip -->
+  <section id="clatCountdownStrip" class="clat-countdown-strip" aria-label="CLAT 2027 Countdown">
+    <div class="container">
+      <div id="clatCountdownCard" class="clat-countdown-card" role="region" aria-label="CLAT 2027 D-Day Countdown">
+        <!-- Target Pill / Badge -->
+        <div class="clat-card-pill">
+          <span class="clat-pulse-dot"></span>
+          <span class="clat-title-text">CLAT 2027</span>
+          <span class="clat-badge-sub font-mono">TARGET</span>
+        </div>
+
+        <!-- Prominent Monospace D-Day Display -->
+        <div class="clat-dday-display font-mono">
+          <span class="clat-d-prefix">D</span>
+          <span class="clat-d-dash">—</span>
+          <span id="clatDDayNumber" class="clat-d-number">---</span>
+        </div>
+
+        <!-- Exam Date & Quick Edit Button -->
+        <div class="clat-date-wrapper">
+          <div class="clat-date-meta">
+            <span class="clat-date-kicker">EXAM DATE</span>
+            <span id="clatExamDateDisplay" class="clat-date-value font-mono">No target date set</span>
+          </div>
+          <button type="button" id="clatEditDateBtn" class="clat-edit-btn btn btn-secondary btn-sm" title="Configure CLAT 2027 exam date in Settings">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span id="clatEditBtnText">Set Date</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container app-content-container">
+
+    <!-- =====================================================================
+         TAB 1: PERFORMANCE (Mock Performance & Error Notebook Analysis)
+         ===================================================================== -->
+    <section id="tab-performance" class="tab-pane active theme-performance" role="tabpanel">
+
+      <!-- ===== PERFORMANCE COMMAND HEADER: Compact D-Day + Upcoming Mock ===== -->
+      <div id="perfCommandHeader" class="perf-command-header">
+
+        <!-- LEFT: Compact D-Day Card -->
+        <div class="compact-dday-card panel-card" id="compactDDayCard" title="Click to edit exam date">
+          <div class="compact-dday-inner">
+            <div class="compact-dday-left">
+              <div class="compact-dday-pill font-mono">
+                <span class="compact-dday-pulse-dot"></span>
+                <span class="compact-dday-label">CLAT 2027</span>
+              </div>
+              <div class="compact-dday-display font-mono">
+                <span class="compact-dday-prefix">D</span>
+                <span class="compact-dday-dash">&#8212;</span>
+                <span id="compactDDayNumber" class="compact-dday-number">---</span>
+              </div>
+            </div>
+            <div class="compact-dday-right">
+              <span id="compactDDayDate" class="compact-dday-date font-mono">No date set</span>
+              <button type="button" id="compactDDayEditBtn" class="btn btn-secondary btn-sm compact-dday-edit-btn">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                <span id="compactDDayEditBtnText">Edit Date</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Upcoming Mock Card -->
+        <div class="upcoming-mock-card panel-card" id="upcomingMockCard">
+          <!-- Populated by MockScheduleManager.renderUpcomingMock() -->
+          <div class="upcoming-mock-loading">Loading schedule...</div>
+        </div>
+
+      </div>
+      <!-- ===== END PERFORMANCE COMMAND HEADER ===== -->
+
+      <!-- SECTION 1A: MOCK PERFORMANCE -->
+      <div id="section-mocks" class="dashboard-section" style="margin-top: 24px;">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">Mock Performance</h2>
+            <span class="section-desc">Track overall trajectory, detect score plateaus, and monitor detailed sectional strengths</span>
+          </div>
+          <button id="openAddMockBtn" class="btn btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Mock
+          </button>
+        </div>
+
+        <!-- Overall Score Graph Card (Overall mock score vs mock/date ONLY) -->
+        <div class="panel-card">
+          <div class="chart-controls-bar">
+            <div class="chart-heading-wrap">
+              <span class="font-mono text-muted" style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Overall Score Progression Curve</span>
+            </div>
+          </div>
+
+          <!-- SVG Line Graph Container -->
+          <div id="mockGraphContainer"></div>
+        </div>
+
+        <!-- Mock History Table -->
+        <div class="panel-card">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <h3 style="font-size: 14px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Mock History</h3>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Mock Name</th>
+                  <th>Date</th>
+                  <th>Score</th>
+                  <th>Percentage</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="mockHistoryBody"></tbody>
+            </table>
+            <div id="mockTableEmptyState" class="empty-table-state" style="display: none;">
+              <p class="text-muted">No mock tests recorded yet. Click "Add Mock" to log your first test.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 1B: WEAKNESS TRACKER -->
+      <div id="section-weakness" class="dashboard-section" style="margin-top: 36px;">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">Weakness Tracker</h2>
+            <span class="section-desc">Algorithmic detection of accuracy bottlenecks, weakest subjects, and recurring priority error topics</span>
+          </div>
+        </div>
+
+        <!-- Intelligent Weakness Insight Banner -->
+        <div id="weaknessInsightBanner" class="weakness-insight-banner" style="display: none;"></div>
+
+        <!-- 2-Column Responsive Weakness Grid -->
+        <div class="weakness-grid">
+          <!-- Card 1: Weak Areas (Subject Ranking) -->
+          <div class="panel-card weakness-panel-card">
+            <div class="weakness-panel-header">
+              <div>
+                <h3 class="weakness-card-headline">WEAK AREAS</h3>
+                <span class="text-muted" style="font-size: 11px;">Ranked from weakest to strongest by accuracy &amp; attempt rates</span>
+              </div>
+            </div>
+            <div id="weakAreasContainer"></div>
+          </div>
+
+          <!-- Card 2: Priority Topics -->
+          <div class="panel-card weakness-panel-card">
+            <div class="weakness-panel-header">
+              <div>
+                <h3 class="weakness-card-headline">PRIORITY TOPICS</h3>
+                <span class="text-muted" style="font-size: 11px;">Frequently repeated conceptual errors from Error Log</span>
+              </div>
+            </div>
+            <div id="priorityTopicsContainer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 1C: ERROR NOTEBOOK -->
+      <div id="section-errors" class="dashboard-section" style="margin-top: 36px;">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">Error Log & Analysis</h2>
+            <span class="section-desc">Analyze question mistakes, identify root causes, and uncover repeating conceptual blindspots</span>
+          </div>
+          <button id="openAddErrorBtn" class="btn btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Error
+          </button>
+        </div>
+
+        <!-- Toolbar: Filters & Keyword Search -->
+        <div class="error-toolbar">
+          <div id="errorFilterTabs" class="error-filter-tabs">
+            <button type="button" class="filter-pill active" data-filter="All">All <span class="pill-count">0</span></button>
+            <button type="button" class="filter-pill" data-filter="English">English <span class="pill-count">0</span></button>
+            <button type="button" class="filter-pill" data-filter="GK">GK <span class="pill-count">0</span></button>
+            <button type="button" class="filter-pill" data-filter="Legal">Legal <span class="pill-count">0</span></button>
+            <button type="button" class="filter-pill" data-filter="Logical">Logical <span class="pill-count">0</span></button>
+            <button type="button" class="filter-pill" data-filter="Quant">Quant <span class="pill-count">0</span></button>
+            <button type="button" class="filter-pill" data-filter="Other">Other <span class="pill-count">0</span></button>
+          </div>
+
+          <div class="error-search-box">
+            <svg class="search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="errorSearchInput" class="search-input" placeholder="Search topic or keyword (e.g. assumption)...">
+          </div>
+        </div>
+
+        <!-- Pattern Alert / Insight Summary -->
+        <div id="errorPatternSummary" class="error-pattern-banner"></div>
+
+        <!-- Error Cards Grid -->
+        <div id="errorListContainer"></div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 2: SECTIONALS (Daily Sectional Marks Tracker & Comparison Engine)
+         ===================================================================== -->
+    <section id="tab-sectionals" class="tab-pane theme-sectionals" role="tabpanel">
+
+      <!-- Section Header & Date Controls Bar -->
+      <div class="sec-top-bar" style="margin-top: 24px;">
+        <div class="sec-header-titles">
+          <div class="sec-title-badge font-mono">DAILY MARKS TRACKER</div>
+          <h2 class="sec-main-title">Sectional Performance Command</h2>
+          <span class="sec-main-desc">Log your daily sectional marks, monitor day-over-day changes, and inspect multi-day progression curves</span>
+        </div>
+
+        <div class="sec-date-control-panel">
+          <div class="sec-quick-date-pills">
+            <button type="button" id="secTodayBtn" class="sec-date-quick-btn">Today</button>
+            <button type="button" id="secYesterdayBtn" class="sec-date-quick-btn">Yesterday</button>
+          </div>
+          <div class="sec-stepper-group">
+            <button type="button" id="secPrevDateBtn" class="btn btn-secondary btn-sm" title="Previous Day">‹ Prev</button>
+            <input type="date" id="secSelectedDateInput" class="sec-date-picker font-mono">
+            <button type="button" id="secNextDateBtn" class="btn btn-secondary btn-sm" title="Next Day">Next ›</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Selected Date Sub-Header Banner -->
+      <div class="sec-active-date-banner">
+        <div class="sec-active-date-info">
+          <span class="sec-calendar-icon">📅</span>
+          <span id="secDateHeaderLabel" class="sec-active-date-text font-mono">Loading date...</span>
+        </div>
+        <div id="secFormStatusNotice" class="sec-form-notice font-mono"></div>
+      </div>
+
+      <!-- SECTION 2A: DAILY SECTIONAL MARKS ENTRY FORM -->
+      <div id="sectionalEntrySection" class="dashboard-section" style="margin-top: 20px;">
+        <form id="sectionalEntryForm">
+          <div class="panel-card sec-entry-card">
+            <div class="sec-entry-card-header">
+              <div>
+                <h3 class="sec-card-title">ENTER SECTIONAL MARKS</h3>
+                <span class="text-muted" style="font-size: 11px;">Input marks scored. Maximum marks can be customized per section if needed.</span>
+              </div>
+              <div class="sec-live-summary-pill font-mono">
+                <span class="text-muted">Total: </span>
+                <strong id="secFormLiveTotalScore" class="text-bright">0</strong>
+                <span class="text-muted"> / </span>
+                <span id="secFormLiveTotalMax" class="text-muted">120</span>
+                <span id="secFormLivePct" class="sec-live-pct-badge font-mono">—%</span>
+              </div>
+            </div>
+
+            <!-- 5 Section Cards Grid -->
+            <div class="sec-inputs-grid">
+              <!-- English -->
+              <div class="sec-sub-card sec-card-english">
+                <div class="sec-sub-header">
+                  <div class="sec-sub-title-wrap">
+                    <span class="sec-indicator" style="background: #38bdf8;"></span>
+                    <strong class="sec-sub-name">English</strong>
+                  </div>
+                  <span class="sec-sub-tag font-mono" style="color: #38bdf8; background: rgba(56, 189, 248, 0.1);">ENG</span>
+                </div>
+                <div class="sec-fields-row">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="input_score_english">Score</label>
+                    <input type="number" id="input_score_english" class="text-input font-mono sec-form-score-input" step="0.25" placeholder="e.g. 21">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="input_max_english">Max Marks</label>
+                    <input type="number" id="input_max_english" class="text-input font-mono sec-form-max-input" step="0.25" value="24">
+                  </div>
+                </div>
+
+                <div class="sec-subcard-divider">
+                  <span>QUESTIONS &amp; ATTEMPTS</span>
+                </div>
+
+                <div class="sec-attempts-grid">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_totalq_english">Total Qs</label>
+                    <input type="number" id="input_totalq_english" class="text-input font-mono sec-form-num-input sec-totalq-input" min="0" placeholder="24" value="24">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_attempted_english">Attempted</label>
+                    <input type="number" id="input_attempted_english" class="text-input font-mono sec-form-num-input sec-attempted-input" min="0" placeholder="e.g. 22">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_correct_english">Correct</label>
+                    <input type="number" id="input_correct_english" class="text-input font-mono sec-form-num-input sec-correct-input" min="0" placeholder="e.g. 21">
+                  </div>
+                </div>
+
+                <div class="sec-calc-telemetry font-mono">
+                  <div class="sec-calc-chip chip-wrong" title="Wrong = Attempted - Correct">
+                    <span class="chip-label">Wrong</span>
+                    <strong id="calc_wrong_english" class="chip-value">—</strong>
+                  </div>
+                  <div class="sec-calc-chip chip-unatt" title="Unattempted = Total Questions - Attempted">
+                    <span class="chip-label">Unattempted</span>
+                    <strong id="calc_unatt_english" class="chip-value">—</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GK -->
+              <div class="sec-sub-card sec-card-gk">
+                <div class="sec-sub-header">
+                  <div class="sec-sub-title-wrap">
+                    <span class="sec-indicator" style="background: #fbbf24;"></span>
+                    <strong class="sec-sub-name">General Knowledge (GK)</strong>
+                  </div>
+                  <span class="sec-sub-tag font-mono" style="color: #fbbf24; background: rgba(251, 191, 36, 0.1);">GK</span>
+                </div>
+                <div class="sec-fields-row">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="input_score_gk">Score</label>
+                    <input type="number" id="input_score_gk" class="text-input font-mono sec-form-score-input" step="0.25" placeholder="e.g. 11">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="input_max_gk">Max Marks</label>
+                    <input type="number" id="input_max_gk" class="text-input font-mono sec-form-max-input" step="0.25" value="28">
+                  </div>
+                </div>
+
+                <div class="sec-subcard-divider">
+                  <span>QUESTIONS &amp; ATTEMPTS</span>
+                </div>
+
+                <div class="sec-attempts-grid">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_totalq_gk">Total Qs</label>
+                    <input type="number" id="input_totalq_gk" class="text-input font-mono sec-form-num-input sec-totalq-input" min="0" placeholder="28" value="28">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_attempted_gk">Attempted</label>
+                    <input type="number" id="input_attempted_gk" class="text-input font-mono sec-form-num-input sec-attempted-input" min="0" placeholder="e.g. 17">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_correct_gk">Correct</label>
+                    <input type="number" id="input_correct_gk" class="text-input font-mono sec-form-num-input sec-correct-input" min="0" placeholder="e.g. 11">
+                  </div>
+                </div>
+
+                <div class="sec-calc-telemetry font-mono">
+                  <div class="sec-calc-chip chip-wrong" title="Wrong = Attempted - Correct">
+                    <span class="chip-label">Wrong</span>
+                    <strong id="calc_wrong_gk" class="chip-value">—</strong>
+                  </div>
+                  <div class="sec-calc-chip chip-unatt" title="Unattempted = Total Questions - Attempted">
+                    <span class="chip-label">Unattempted</span>
+                    <strong id="calc_unatt_gk" class="chip-value">—</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Legal -->
+              <div class="sec-sub-card sec-card-legal">
+                <div class="sec-sub-header">
+                  <div class="sec-sub-title-wrap">
+                    <span class="sec-indicator" style="background: #a855f7;"></span>
+                    <strong class="sec-sub-name">Legal Reasoning</strong>
+                  </div>
+                  <span class="sec-sub-tag font-mono" style="color: #a855f7; background: rgba(168, 85, 247, 0.1);">LEG</span>
+                </div>
+                <div class="sec-fields-row">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="input_score_legal">Score</label>
+                    <input type="number" id="input_score_legal" class="text-input font-mono sec-form-score-input" step="0.25" placeholder="e.g. 25">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="input_max_legal">Max Marks</label>
+                    <input type="number" id="input_max_legal" class="text-input font-mono sec-form-max-input" step="0.25" value="30">
+                  </div>
+                </div>
+
+                <div class="sec-subcard-divider">
+                  <span>QUESTIONS &amp; ATTEMPTS</span>
+                </div>
+
+                <div class="sec-attempts-grid">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_totalq_legal">Total Qs</label>
+                    <input type="number" id="input_totalq_legal" class="text-input font-mono sec-form-num-input sec-totalq-input" min="0" placeholder="30" value="30">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_attempted_legal">Attempted</label>
+                    <input type="number" id="input_attempted_legal" class="text-input font-mono sec-form-num-input sec-attempted-input" min="0" placeholder="e.g. 27">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_correct_legal">Correct</label>
+                    <input type="number" id="input_correct_legal" class="text-input font-mono sec-form-num-input sec-correct-input" min="0" placeholder="e.g. 25">
+                  </div>
+                </div>
+
+                <div class="sec-calc-telemetry font-mono">
+                  <div class="sec-calc-chip chip-wrong" title="Wrong = Attempted - Correct">
+                    <span class="chip-label">Wrong</span>
+                    <strong id="calc_wrong_legal" class="chip-value">—</strong>
+                  </div>
+                  <div class="sec-calc-chip chip-unatt" title="Unattempted = Total Questions - Attempted">
+                    <span class="chip-label">Unattempted</span>
+                    <strong id="calc_unatt_legal" class="chip-value">—</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Logical -->
+              <div class="sec-sub-card sec-card-logical">
+                <div class="sec-sub-header">
+                  <div class="sec-sub-title-wrap">
+                    <span class="sec-indicator" style="background: #ec4899;"></span>
+                    <strong class="sec-sub-name">Logical Reasoning</strong>
+                  </div>
+                  <span class="sec-sub-tag font-mono" style="color: #ec4899; background: rgba(236, 72, 153, 0.1);">LOG</span>
+                </div>
+                <div class="sec-fields-row">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="input_score_logical">Score</label>
+                    <input type="number" id="input_score_logical" class="text-input font-mono sec-form-score-input" step="0.25" placeholder="e.g. 19">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="input_max_logical">Max Marks</label>
+                    <input type="number" id="input_max_logical" class="text-input font-mono sec-form-max-input" step="0.25" value="24">
+                  </div>
+                </div>
+
+                <div class="sec-subcard-divider">
+                  <span>QUESTIONS &amp; ATTEMPTS</span>
+                </div>
+
+                <div class="sec-attempts-grid">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_totalq_logical">Total Qs</label>
+                    <input type="number" id="input_totalq_logical" class="text-input font-mono sec-form-num-input sec-totalq-input" min="0" placeholder="24" value="24">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_attempted_logical">Attempted</label>
+                    <input type="number" id="input_attempted_logical" class="text-input font-mono sec-form-num-input sec-attempted-input" min="0" placeholder="e.g. 21">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_correct_logical">Correct</label>
+                    <input type="number" id="input_correct_logical" class="text-input font-mono sec-form-num-input sec-correct-input" min="0" placeholder="e.g. 19">
+                  </div>
+                </div>
+
+                <div class="sec-calc-telemetry font-mono">
+                  <div class="sec-calc-chip chip-wrong" title="Wrong = Attempted - Correct">
+                    <span class="chip-label">Wrong</span>
+                    <strong id="calc_wrong_logical" class="chip-value">—</strong>
+                  </div>
+                  <div class="sec-calc-chip chip-unatt" title="Unattempted = Total Questions - Attempted">
+                    <span class="chip-label">Unattempted</span>
+                    <strong id="calc_unatt_logical" class="chip-value">—</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quant -->
+              <div class="sec-sub-card sec-card-quant">
+                <div class="sec-sub-header">
+                  <div class="sec-sub-title-wrap">
+                    <span class="sec-indicator" style="background: #10b981;"></span>
+                    <strong class="sec-sub-name">Quantitative Techniques</strong>
+                  </div>
+                  <span class="sec-sub-tag font-mono" style="color: #10b981; background: rgba(16, 185, 129, 0.1);">QT</span>
+                </div>
+                <div class="sec-fields-row">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="input_score_quant">Score</label>
+                    <input type="number" id="input_score_quant" class="text-input font-mono sec-form-score-input" step="0.25" placeholder="e.g. 10">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="input_max_quant">Max Marks</label>
+                    <input type="number" id="input_max_quant" class="text-input font-mono sec-form-max-input" step="0.25" value="14">
+                  </div>
+                </div>
+
+                <div class="sec-subcard-divider">
+                  <span>QUESTIONS &amp; ATTEMPTS</span>
+                </div>
+
+                <div class="sec-attempts-grid">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_totalq_quant">Total Qs</label>
+                    <input type="number" id="input_totalq_quant" class="text-input font-mono sec-form-num-input sec-totalq-input" min="0" placeholder="14" value="14">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_attempted_quant">Attempted</label>
+                    <input type="number" id="input_attempted_quant" class="text-input font-mono sec-form-num-input sec-attempted-input" min="0" placeholder="e.g. 11">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label sec-sub-label" for="input_correct_quant">Correct</label>
+                    <input type="number" id="input_correct_quant" class="text-input font-mono sec-form-num-input sec-correct-input" min="0" placeholder="e.g. 10">
+                  </div>
+                </div>
+
+                <div class="sec-calc-telemetry font-mono">
+                  <div class="sec-calc-chip chip-wrong" title="Wrong = Attempted - Correct">
+                    <span class="chip-label">Wrong</span>
+                    <strong id="calc_wrong_quant" class="chip-value">—</strong>
+                  </div>
+                  <div class="sec-calc-chip chip-unatt" title="Unattempted = Total Questions - Attempted">
+                    <span class="chip-label">Unattempted</span>
+                    <strong id="calc_unatt_quant" class="chip-value">—</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Action Buttons -->
+            <div class="sec-form-actions-bar">
+              <button type="button" id="secClearFormBtn" class="btn btn-secondary">Clear Inputs</button>
+              <button type="submit" class="btn btn-primary btn-save-sectionals">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save Daily Sectionals
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- SECTION 2B: SECTIONAL PROGRESS & PREVIOUS DAY COMPARISON -->
+      <div id="section-sectional-progress" class="dashboard-section" style="margin-top: 36px;">
+        <div id="sectionalProgressContainer"></div>
+      </div>
+
+      <!-- SECTION 2C: MULTI-DAY PROGRESSION CURVE -->
+      <div id="section-sectional-chart" class="dashboard-section" style="margin-top: 36px;">
+        <div class="panel-card">
+          <div class="chart-controls-bar">
+            <div class="chart-heading-wrap">
+              <span class="font-mono text-muted" style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Sectional Progression Curve</span>
+            </div>
+            <div class="sec-chart-filters-wrap">
+              <!-- Scope / Subject Filter -->
+              <div id="secChartFilterGroup" class="sec-chart-filters font-mono">
+                <button type="button" class="chart-filter-btn active" data-view="all">All Sections</button>
+                <button type="button" class="chart-filter-btn" data-view="overall">Overall</button>
+                <button type="button" class="chart-filter-btn" data-view="english">English</button>
+                <button type="button" class="chart-filter-btn" data-view="gk">GK</button>
+                <button type="button" class="chart-filter-btn" data-view="legal">Legal</button>
+                <button type="button" class="chart-filter-btn" data-view="logical">Logical</button>
+                <button type="button" class="chart-filter-btn" data-view="quant">Quant</button>
+              </div>
+              <!-- Metric Type Filter -->
+              <div id="secChartMetricFilterGroup" class="sec-chart-filters sec-metric-filters font-mono">
+                <button type="button" class="chart-metric-btn active" data-metric="marks">
+                  <span class="metric-indicator" style="background: #38bdf8;"></span> Marks
+                </button>
+                <button type="button" class="chart-metric-btn" data-metric="attemptRate">
+                  <span class="metric-indicator" style="background: #fbbf24;"></span> Attempt Rate %
+                </button>
+                <button type="button" class="chart-metric-btn" data-metric="accuracy">
+                  <span class="metric-indicator" style="background: #34d399;"></span> Accuracy %
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="secGraphContainer"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 2D: SECTIONAL WEAKNESS TRACKER -->
+      <div id="section-sectional-weakness" class="dashboard-section" style="margin-top: 36px;">
+        <div class="panel-card">
+          <div class="sec-panel-header">
+            <div>
+              <div class="sec-badge-cyan font-mono">ANALYTICS ENGINE</div>
+              <h3 class="sec-panel-title">Sectional Weakness &amp; Priority Tracker</h3>
+              <p class="sec-panel-subtitle">Algorithmic analysis of weakest sections, bottleneck topics, accuracy, attempt rates, and recurring mistake patterns.</p>
+            </div>
+          </div>
+
+          <div id="secWeaknessInsightBanner" class="sec-weakness-insight-wrap"></div>
+
+          <div class="sec-weakness-grid">
+            <!-- Left: Weakest Sections Ranking -->
+            <div class="sec-weakness-subcard">
+              <div class="sec-subcard-header">
+                <h4 class="sec-subcard-title">Weakest Sections Hierarchy</h4>
+                <span class="sec-subcard-tag font-mono">Ranked by Accuracy &amp; Attempt Rate</span>
+              </div>
+              <div id="secWeaknessRankingContainer"></div>
+            </div>
+
+            <!-- Right: Priority Topics for Revision & Repeated Errors -->
+            <div class="sec-weakness-subcard">
+              <div class="sec-subcard-header">
+                <h4 class="sec-subcard-title">Priority Topics for Revision</h4>
+                <span class="sec-subcard-tag font-mono">Repeated Mistakes &amp; Unrevised</span>
+              </div>
+              <div id="secPriorityTopicsContainer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2E: SECTIONAL ERROR NOTEBOOK -->
+      <div id="section-sectional-errors" class="dashboard-section" style="margin-top: 36px; margin-bottom: 40px;">
+        <div class="panel-card">
+          <div class="sec-panel-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+            <div>
+              <div class="sec-badge-cyan font-mono">MISTAKE ANALYSIS</div>
+              <h3 class="sec-panel-title">Sectional Error Log</h3>
+              <p class="sec-panel-subtitle">Record and master question mistakes from daily sectional tests. Track root causes, takeaways, and revision status.</p>
+            </div>
+            <button type="button" id="openAddSecErrorBtn" class="btn btn-primary btn-sm font-mono" style="background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%); border-color: rgba(56, 189, 248, 0.4);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Log Sectional Mistake
+            </button>
+          </div>
+
+          <!-- Summary Telemetry Chips -->
+          <div id="secErrorSummaryBanner" class="sec-error-summary-bar"></div>
+
+          <!-- Filter & Search Toolbar -->
+          <div class="sec-error-toolbar">
+            <!-- Section Filters -->
+            <div class="sec-error-filter-row">
+              <span class="sec-toolbar-label font-mono">SECTION:</span>
+              <div id="secErrorSectionFilters" class="sec-error-pills-wrap font-mono">
+                <button type="button" class="sec-error-filter-pill active" data-section="All">All <span class="pill-count">0</span></button>
+                <button type="button" class="sec-error-filter-pill" data-section="English">English <span class="pill-count">0</span></button>
+                <button type="button" class="sec-error-filter-pill" data-section="GK">GK <span class="pill-count">0</span></button>
+                <button type="button" class="sec-error-filter-pill" data-section="Legal">Legal <span class="pill-count">0</span></button>
+                <button type="button" class="sec-error-filter-pill" data-section="Logical">Logical <span class="pill-count">0</span></button>
+                <button type="button" class="sec-error-filter-pill" data-section="Quant">Quant <span class="pill-count">0</span></button>
+              </div>
+            </div>
+
+            <!-- Status Filters & Search Bar -->
+            <div class="sec-error-filter-row sec-error-filter-row-split">
+              <div class="sec-status-group">
+                <span class="sec-toolbar-label font-mono">STATUS:</span>
+                <div id="secErrorStatusFilters" class="sec-status-pills-wrap font-mono">
+                  <button type="button" class="sec-status-filter-pill active" data-status="All">All <span class="pill-count">0</span></button>
+                  <button type="button" class="sec-status-filter-pill status-pill-unrev" data-status="Unrevised">Unrevised <span class="pill-count">0</span></button>
+                  <button type="button" class="sec-status-filter-pill status-pill-rev" data-status="Revised">Revised <span class="pill-count">0</span></button>
+                  <button type="button" class="sec-status-filter-pill status-pill-mas" data-status="Mastered">Mastered <span class="pill-count">0</span></button>
+                </div>
+              </div>
+
+              <div class="sec-error-search-box">
+                <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="secErrorSearchInput" class="sec-error-search-field" placeholder="Search topic, mistake, reason, correct approach...">
+              </div>
+            </div>
+          </div>
+
+          <!-- Sectional Error Cards Grid -->
+          <div id="secErrorListContainer" class="sec-error-list-wrap"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =====================================================================
+         TAB 3: TIMER (Countdown Timer, Stopwatch, Targets, Breakdown & History)
+         ===================================================================== -->
+    <section id="tab-study" class="tab-pane theme-study" role="tabpanel">
+
+      <!-- Today's Total & Today's Target Header Cards -->
+      <div class="study-overview-grid" style="margin-top: 24px;">
+        <!-- Today's Total Hero Card -->
+        <div class="overview-stat-card">
+          <span class="overview-stat-label">TODAY'S STUDY</span>
+          <div id="studyTodayTotalHero" class="overview-stat-value font-mono">0m</div>
+          <span class="overview-stat-sub">Tracked study sessions + manual logs</span>
+        </div>
+
+        <!-- Today's Target Card -->
+        <div class="overview-stat-card target-overview-card" id="studyTargetCard">
+          <div class="target-card-header">
+            <span class="overview-stat-label">TODAY'S TARGET</span>
+            <div class="target-control-inline">
+              <input type="number" id="studyDailyTargetInput" class="target-input-sm font-mono" min="0.5" max="24" step="0.5" value="6" title="Daily study target in hours">
+              <span class="target-input-unit">h</span>
+            </div>
+          </div>
+
+          <div class="target-progress-row">
+            <div>
+              <span class="text-muted" style="font-size: 11px;">Current: </span>
+              <strong id="studyTargetCurrentDisplay" class="font-mono text-bright">0m</strong>
+              <span class="text-muted" style="font-size: 11px; margin-left: 6px;">of </span>
+              <strong id="studyTargetHoursDisplay" class="font-mono text-bright">6h</strong>
+            </div>
+            <div id="studyTargetPctDisplay" class="font-mono target-pct-text">0.0%</div>
+          </div>
+
+          <div class="target-progress-track">
+            <div id="studyTargetProgressBar" class="target-progress-fill" style="width: 0%;"></div>
+          </div>
+
+          <div id="studyTargetStatusBadge" class="target-status-wrap">
+            <span class="target-badge-remaining font-mono">6h 00m remaining</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dual Timers Command Center (Countdown Timer + Continuous Stopwatch) -->
+      <div class="dual-timers-grid">
+        <!-- 1. STUDY COUNTDOWN TIMER -->
+        <div class="pomodoro-card timer-card countdown-timer-card" id="countdownTimerCard">
+          <!-- Header Bar -->
+          <div class="hero-timer-header">
+            <div class="hero-timer-title-group">
+              <span class="live-pulse-dot" style="background-color: #38bdf8; box-shadow: 0 0 10px #38bdf8;"></span>
+              <span class="timer-chip-label">STUDY COUNTDOWN TIMER</span>
+            </div>
+            <div class="hero-timer-header-actions">
+              <span id="countdownStatusBadge" class="timer-status-badge status-ready font-mono">READY</span>
+              <button type="button" id="countdownFullscreenBtn" class="timer-fullscreen-btn" title="Open Fullscreen Countdown" aria-label="Fullscreen Countdown Mode">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Selectors: Parent Task & Subtopic -->
+          <div class="timer-task-selectors-grid hero-selectors-grid">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="timer-selector-label" for="countdownTaskSelect">Parent Task</label>
+              <select id="countdownTaskSelect" class="select-input select-hero" title="Select study task"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="timer-selector-label" for="countdownSubtaskSelect">Subtopic / Focus Area</label>
+              <select id="countdownSubtaskSelect" class="select-input select-hero" title="Select subtopic"></select>
+            </div>
+          </div>
+
+          <!-- Duration Input & Quick Presets -->
+          <div class="countdown-duration-bar" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 6px; background: rgba(10, 14, 26, 0.7); border: 1px solid var(--border-medium); border-radius: var(--radius-md); padding: 4px 12px;">
+              <label for="countdownDurationInput" class="font-mono text-muted" style="font-size: 11px; text-transform: uppercase; font-weight: 700;">Duration:</label>
+              <input type="number" id="countdownDurationInput" class="text-input font-mono" min="1" max="720" value="25" style="width: 64px; padding: 4px 8px; text-align: center; height: 28px; font-size: 13px;" title="Study duration in minutes">
+              <span class="font-mono text-muted" style="font-size: 11px;">min</span>
+            </div>
+            <div class="countdown-presets-group" style="display: flex; gap: 6px;">
+              <button type="button" class="countdown-preset-btn font-mono" data-minutes="25">25m</button>
+              <button type="button" class="countdown-preset-btn font-mono" data-minutes="40">40m</button>
+              <button type="button" class="countdown-preset-btn font-mono" data-minutes="60">60m</button>
+              <button type="button" class="countdown-preset-btn font-mono" data-minutes="90">90m</button>
+            </div>
+          </div>
+
+          <!-- Active Task Tracking Tag -->
+          <div id="countdownActiveTaskTag" class="active-task-tag hero-active-tag" style="display: none;"></div>
+
+          <!-- Massive Glowing Digits (MM:SS) -->
+          <div class="hero-digits-wrap">
+            <div class="timer-activation-wave" aria-hidden="true"></div>
+            <div id="countdownDigitsDisplay" class="timer-digits-display font-mono hero-digits pomo-digits">25:00</div>
+          </div>
+
+          <!-- Completion Banner -->
+          <div id="countdownCompleteBanner" class="countdown-complete-banner" style="display: none;">
+            🎉 Session Complete! Time logged to your daily study total.
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="pomo-progress-track" style="max-width: 480px; margin: 0 auto 16px auto;">
+            <div id="countdownProgressBar" class="pomo-progress-fill" style="width: 0%;"></div>
+          </div>
+
+          <!-- Control Buttons -->
+          <div class="timer-controls hero-controls">
+            <button type="button" id="countdownStartBtn" class="btn btn-primary btn-hero-start">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>START COUNTDOWN</span>
+            </button>
+            <button type="button" id="countdownPauseBtn" class="btn btn-secondary btn-hero-action" style="display: none;">
+              ⏸ Pause
+            </button>
+            <button type="button" id="countdownResumeBtn" class="btn btn-primary btn-hero-action" style="display: none;">
+              ▶ Resume
+            </button>
+            <button type="button" id="countdownResetBtn" class="btn btn-secondary btn-hero-discard" title="Reset countdown to duration">
+              ↺ Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. CONTINUOUS STOPWATCH COMMAND CENTER -->
+        <div class="timer-card hero-timer-card" id="heroTimerCard">
+          <!-- Header Bar -->
+          <div class="hero-timer-header">
+            <div class="hero-timer-title-group">
+              <span class="live-pulse-dot"></span>
+              <span class="timer-chip-label">CONTINUOUS STOPWATCH</span>
+            </div>
+            <div class="hero-timer-header-actions">
+              <span id="heroTimerStatusBadge" class="timer-status-badge status-ready font-mono">READY</span>
+              <button type="button" id="stopwatchFullscreenBtn" class="timer-fullscreen-btn" title="Open Fullscreen Stopwatch" aria-label="Fullscreen Stopwatch Mode">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Selectors: Parent Task & Subtopic -->
+          <div class="timer-task-selectors-grid hero-selectors-grid">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="timer-selector-label" for="timerTaskSelect">Parent Task</label>
+              <select id="timerTaskSelect" class="select-input select-hero" title="Select study task"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="timer-selector-label" for="timerSubtaskSelect">Subtopic / Focus Area</label>
+              <select id="timerSubtaskSelect" class="select-input select-hero" title="Select subtopic"></select>
+            </div>
+          </div>
+
+          <!-- Active Task Tracking Tag -->
+          <div id="timerActiveTaskTag" class="active-task-tag hero-active-tag" style="display: none;"></div>
+
+          <!-- Massive Glowing Digits -->
+          <div class="hero-digits-wrap">
+            <div class="timer-activation-wave" aria-hidden="true"></div>
+            <div id="timerDigits" class="timer-digits-display font-mono hero-digits">00:00:00</div>
+          </div>
+
+          <!-- Control Buttons -->
+          <div class="timer-controls hero-controls">
+            <button type="button" id="timerStartBtn" class="btn btn-primary btn-hero-start">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>START SESSION</span>
+            </button>
+            <button type="button" id="timerPauseBtn" class="btn btn-secondary btn-hero-action" style="display: none;">
+              ⏸ Pause
+            </button>
+            <button type="button" id="timerStopBtn" class="btn btn-danger btn-hero-action" style="display: none;">
+              ⏹ Stop & Save Session
+            </button>
+            <button type="button" id="timerDiscardBtn" class="btn btn-secondary btn-hero-discard" style="display: none;" title="Discard session without saving">
+              ↺ Discard
+            </button>
+          </div>
+
+          <!-- Footer Meta Bar -->
+          <div class="hero-timer-footer-bar">
+            <span class="font-mono text-muted" style="font-size: 11px;">
+              Continuous study time tracking persisted automatically across reloads
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3B: TODAY'S STUDY CHECKLIST -->
+      <div class="panel-card study-checklist-card" id="studyChecklistCard" style="margin-top: 24px;">
+        <div class="checklist-header">
+          <div class="checklist-title-group">
+            <div class="checklist-pill font-mono">
+              <span class="checklist-dot"></span>
+              <span>DAILY STUDY PLAN</span>
+            </div>
+            <h3 class="checklist-title">Today's Study Checklist</h3>
+            <span class="checklist-subtitle">Track, check off, and manage today's target study tasks and revision goals</span>
+          </div>
+          <div class="checklist-header-actions">
+            <button type="button" id="checklistAddTaskBtn" class="btn btn-primary btn-sm font-mono">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              + Add Task
+            </button>
+          </div>
+        </div>
+
+        <!-- Checklist List Container -->
+        <div id="studyChecklistContainer" class="checklist-items-wrap">
+          <!-- Rendered dynamically by StudyManager.renderChecklist() -->
+        </div>
+
+        <!-- Progress Footer Bar -->
+        <div class="checklist-footer" id="checklistFooter">
+          <div class="checklist-progress-meta">
+            <div class="checklist-progress-label-wrap">
+              <span class="font-mono text-muted" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">TODAY'S PROGRESS</span>
+              <span id="checklistPctText" class="font-mono checklist-pct-text">0%</span>
+            </div>
+            <span id="checklistProgressText" class="font-mono checklist-count-text">0 / 0 completed</span>
+          </div>
+          <div class="checklist-progress-track">
+            <div id="checklistProgressBar" class="checklist-progress-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Proportional Task Breakdown -->
+      <div class="panel-card">
+        <h3 style="font-size: 13px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Today's Task Distribution</h3>
+        <div id="todayBreakdownContainer"></div>
+      </div>
+
+      <!-- Weekly Study Consistency (Last 7 Days) -->
+      <div class="panel-card">
+        <div class="section-header" style="margin-bottom: 4px;">
+          <h3 style="font-size: 13px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Last 7 Days Consistency</h3>
+          <span class="font-mono text-muted" style="font-size: 11px;">Hours Studied per Day</span>
+        </div>
+        <div id="weeklyStudyChartContainer"></div>
+      </div>
+
+      <!-- Daily History Inspector -->
+      <div class="panel-card">
+        <div class="section-header" style="margin-bottom: 12px;">
+          <div>
+            <h3 style="font-size: 13px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Daily Study History</h3>
+            <span class="section-desc">Inspect per-day totals, breakdown by task, and manage individual sessions</span>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" id="openTaskManagerBtn" class="btn btn-secondary btn-sm" title="Manage Study Tasks & Subtopics">⚙ Manage Tasks</button>
+            <button type="button" id="openAddTaskModalBtn" class="btn btn-secondary btn-sm">+ New Task</button>
+            <button type="button" id="openManualLogBtn" class="btn btn-secondary btn-sm">+ Log Time</button>
+          </div>
+        </div>
+
+        <div class="history-date-bar">
+          <div class="hist-nav-group">
+            <button type="button" id="histPrevDayBtn" class="btn btn-secondary btn-sm">‹ Prev</button>
+            <span id="histSelectedDateLabel" class="font-mono" style="font-size: 13px; color: var(--text-bright);">Today</span>
+            <button type="button" id="histNextDayBtn" class="btn btn-secondary btn-sm">Next ›</button>
+            <button type="button" id="histTodayBtn" class="btn btn-secondary btn-sm">Today</button>
+            <input type="date" id="histDatePicker" class="hist-date-picker">
+          </div>
+          <div class="hist-total-display">
+            Total on Date: <strong id="histDateTotal" class="font-mono">0m</strong>
+          </div>
+        </div>
+
+        <div id="histDateBreakdown" class="hist-breakdown-tags"></div>
+        <div id="historySessionsList"></div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 4: STREAK (Immersive Full-Screen Consistency Command Center)
+         ===================================================================== -->
+    <section id="tab-streak" class="tab-pane theme-streak" role="tabpanel">
+
+      <!-- Massive Study Streak Hero Display -->
+      <div class="streak-hero-card">
+        <div class="streak-hero-label">STUDY STREAK</div>
+        <div class="streak-hero-main">
+          <span id="streakHeroNumber" class="streak-hero-digits font-mono">0</span>
+          <span class="streak-hero-unit">DAYS</span>
+        </div>
+        <p id="streakHeroSubtitle" class="streak-hero-subtitle">
+          Start your study streak today! Complete at least 30 minutes of study.
+        </p>
+      </div>
+
+      <!-- Streak Analytics & Minimum Threshold Setting -->
+      <div class="streak-stats-grid">
+        <div class="streak-stat-box">
+          <span class="streak-stat-label">CURRENT STREAK</span>
+          <div id="statCurrentStreak" class="streak-stat-value font-mono">0 days</div>
+          <span class="streak-stat-sub">Consecutive days</span>
+        </div>
+
+        <div class="streak-stat-box">
+          <span class="streak-stat-label">LONGEST STREAK</span>
+          <div id="statLongestStreak" class="streak-stat-value font-mono">0 days</div>
+          <span class="streak-stat-sub">Personal record</span>
+        </div>
+
+        <div class="streak-stat-box">
+          <span class="streak-stat-label">TOTAL STUDY DAYS</span>
+          <div id="statTotalStudyDays" class="streak-stat-value font-mono">0 days</div>
+          <span class="streak-stat-sub">Distinct active days</span>
+        </div>
+
+        <div class="streak-stat-box">
+          <span class="streak-stat-label">TOTAL STUDY TIME</span>
+          <div id="statTotalStudyHours" class="streak-stat-value font-mono">0h</div>
+          <span class="streak-stat-sub">Recorded prep duration</span>
+        </div>
+
+        <div class="streak-stat-box">
+          <span class="streak-stat-label">DAILY AVERAGE</span>
+          <div id="statAvgStudyTime" class="streak-stat-value font-mono">0h/day</div>
+          <span class="streak-stat-sub">Per active study day</span>
+        </div>
+
+        <!-- Configurable Threshold Box -->
+        <div class="streak-stat-box threshold-stat-box">
+          <span class="streak-stat-label">MIN STREAK THRESHOLD</span>
+          <div class="threshold-input-wrap">
+            <input type="number" id="streakThresholdInput" class="threshold-input-num font-mono" min="1" max="180" value="30">
+            <span class="threshold-input-unit">min/day</span>
+          </div>
+          <span class="streak-stat-sub">Qualifying daily study time</span>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       MODALS
+       ========================================================================= -->
+
+  <!-- Add / Edit Mock Modal -->
+  <div id="mockModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 900px; width: 94vw;">
+      <div class="modal-header">
+        <h3 id="mockModalTitle" class="modal-title">Add Mock Score</h3>
+        <button id="closeMockModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <form id="mockForm">
+        <div class="modal-body">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="mockNameInput">Mock Name / Number *</label>
+              <input type="text" id="mockNameInput" class="text-input" placeholder="e.g. Mock 12" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="mockDateInput">Date *</label>
+              <input type="date" id="mockDateInput" class="text-input" required>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="mockScoreInput">Overall Score *</label>
+              <input type="number" id="mockScoreInput" class="text-input font-mono" step="0.25" placeholder="Auto sum of sections" title="Automatically calculated as sum of section scores" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="mockMaxScoreInput">Maximum Marks (Total Qs) *</label>
+              <input type="number" id="mockMaxScoreInput" class="text-input font-mono" value="120" required>
+            </div>
+          </div>
+
+          <div class="sectional-section-wrap">
+            <div class="sectional-header-row">
+              <span class="sectional-legend-title">Sectional Performance (Optional)</span>
+              <span class="text-muted" style="font-size: 11px;">Enter Max Qs, Attempted, and Correct. Wrong, Unattempted, and Score calculate automatically.</span>
+            </div>
+
+            <!-- Subject Row: English -->
+            <div class="sec-input-card" data-subject="english">
+              <div class="sec-card-header">
+                <span class="subject-badge subject-english">English</span>
+                <span class="sec-calc-badge font-mono" id="sec_english_calc_badge"></span>
+              </div>
+              <div class="sec-fields-grid">
+                <div class="form-group">
+                  <label class="form-label">Max Questions</label>
+                  <input type="number" id="sec_english_max" class="text-input font-mono sec-max-input" step="0.25" placeholder="e.g. 24" title="Maximum questions/marks for English">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Attempted</label>
+                  <input type="number" id="sec_english_attempted" class="text-input font-mono sec-att-input" step="1" placeholder="e.g. 19" title="Questions attempted">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Correct</label>
+                  <input type="number" id="sec_english_correct" class="text-input font-mono sec-corr-input" step="1" placeholder="e.g. 16" title="Correct answers">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Wrong</label>
+                  <input type="number" id="sec_english_wrong" class="text-input font-mono sec-wrong-input" step="1" placeholder="Auto" title="Automatically calculated: Attempted - Correct">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Unattempted</label>
+                  <input type="number" id="sec_english_unattempted" class="text-input font-mono sec-unatt-input" placeholder="Auto" readonly tabindex="-1" title="Automatically calculated: Max Questions - Attempted">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Score</label>
+                  <input type="number" id="sec_english_score" class="text-input font-mono sec-score-input" step="0.25" placeholder="Auto" title="Automatically calculated: Correct - (Wrong × 0.25)">
+                </div>
+              </div>
+            </div>
+
+            <!-- Subject Row: GK -->
+            <div class="sec-input-card" data-subject="gk">
+              <div class="sec-card-header">
+                <span class="subject-badge subject-gk">General Knowledge (GK)</span>
+                <span class="sec-calc-badge font-mono" id="sec_gk_calc_badge"></span>
+              </div>
+              <div class="sec-fields-grid">
+                <div class="form-group">
+                  <label class="form-label">Max Questions</label>
+                  <input type="number" id="sec_gk_max" class="text-input font-mono sec-max-input" step="0.25" placeholder="e.g. 28" title="Maximum questions/marks for GK">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Attempted</label>
+                  <input type="number" id="sec_gk_attempted" class="text-input font-mono sec-att-input" step="1" placeholder="e.g. 18" title="Questions attempted">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Correct</label>
+                  <input type="number" id="sec_gk_correct" class="text-input font-mono sec-corr-input" step="1" placeholder="e.g. 12" title="Correct answers">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Wrong</label>
+                  <input type="number" id="sec_gk_wrong" class="text-input font-mono sec-wrong-input" step="1" placeholder="Auto" title="Automatically calculated: Attempted - Correct">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Unattempted</label>
+                  <input type="number" id="sec_gk_unattempted" class="text-input font-mono sec-unatt-input" placeholder="Auto" readonly tabindex="-1" title="Automatically calculated: Max Questions - Attempted">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Score</label>
+                  <input type="number" id="sec_gk_score" class="text-input font-mono sec-score-input" step="0.25" placeholder="Auto" title="Automatically calculated: Correct - (Wrong × 0.25)">
+                </div>
+              </div>
+            </div>
+
+            <!-- Subject Row: Legal -->
+            <div class="sec-input-card" data-subject="legal">
+              <div class="sec-card-header">
+                <span class="subject-badge subject-legal">Legal Reasoning</span>
+                <span class="sec-calc-badge font-mono" id="sec_legal_calc_badge"></span>
+              </div>
+              <div class="sec-fields-grid">
+                <div class="form-group">
+                  <label class="form-label">Max Questions</label>
+                  <input type="number" id="sec_legal_max" class="text-input font-mono sec-max-input" step="0.25" placeholder="e.g. 30" title="Maximum questions/marks for Legal">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Attempted</label>
+                  <input type="number" id="sec_legal_attempted" class="text-input font-mono sec-att-input" step="1" placeholder="e.g. 24" title="Questions attempted">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Correct</label>
+                  <input type="number" id="sec_legal_correct" class="text-input font-mono sec-corr-input" step="1" placeholder="e.g. 22" title="Correct answers">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Wrong</label>
+                  <input type="number" id="sec_legal_wrong" class="text-input font-mono sec-wrong-input" step="1" placeholder="Auto" title="Automatically calculated: Attempted - Correct">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Unattempted</label>
+                  <input type="number" id="sec_legal_unattempted" class="text-input font-mono sec-unatt-input" placeholder="Auto" readonly tabindex="-1" title="Automatically calculated: Max Questions - Attempted">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Score</label>
+                  <input type="number" id="sec_legal_score" class="text-input font-mono sec-score-input" step="0.25" placeholder="Auto" title="Automatically calculated: Correct - (Wrong × 0.25)">
+                </div>
+              </div>
+            </div>
+
+            <!-- Subject Row: Logical -->
+            <div class="sec-input-card" data-subject="logical">
+              <div class="sec-card-header">
+                <span class="subject-badge subject-logical">Logical Reasoning</span>
+                <span class="sec-calc-badge font-mono" id="sec_logical_calc_badge"></span>
+              </div>
+              <div class="sec-fields-grid">
+                <div class="form-group">
+                  <label class="form-label">Max Questions</label>
+                  <input type="number" id="sec_logical_max" class="text-input font-mono sec-max-input" step="0.25" placeholder="e.g. 24" title="Maximum questions/marks for Logical">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Attempted</label>
+                  <input type="number" id="sec_logical_attempted" class="text-input font-mono sec-att-input" step="1" placeholder="e.g. 19" title="Questions attempted">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Correct</label>
+                  <input type="number" id="sec_logical_correct" class="text-input font-mono sec-corr-input" step="1" placeholder="e.g. 16" title="Correct answers">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Wrong</label>
+                  <input type="number" id="sec_logical_wrong" class="text-input font-mono sec-wrong-input" step="1" placeholder="Auto" title="Automatically calculated: Attempted - Correct">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Unattempted</label>
+                  <input type="number" id="sec_logical_unattempted" class="text-input font-mono sec-unatt-input" placeholder="Auto" readonly tabindex="-1" title="Automatically calculated: Max Questions - Attempted">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Score</label>
+                  <input type="number" id="sec_logical_score" class="text-input font-mono sec-score-input" step="0.25" placeholder="Auto" title="Automatically calculated: Correct - (Wrong × 0.25)">
+                </div>
+              </div>
+            </div>
+
+            <!-- Subject Row: Quant -->
+            <div class="sec-input-card" data-subject="quant">
+              <div class="sec-card-header">
+                <span class="subject-badge subject-quant">Quantitative Techniques</span>
+                <span class="sec-calc-badge font-mono" id="sec_quant_calc_badge"></span>
+              </div>
+              <div class="sec-fields-grid">
+                <div class="form-group">
+                  <label class="form-label">Max Questions</label>
+                  <input type="number" id="sec_quant_max" class="text-input font-mono sec-max-input" step="0.25" placeholder="e.g. 14" title="Maximum questions/marks for Quant">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Attempted</label>
+                  <input type="number" id="sec_quant_attempted" class="text-input font-mono sec-att-input" step="1" placeholder="e.g. 9" title="Questions attempted">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Correct</label>
+                  <input type="number" id="sec_quant_correct" class="text-input font-mono sec-corr-input" step="1" placeholder="e.g. 6" title="Correct answers">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Wrong</label>
+                  <input type="number" id="sec_quant_wrong" class="text-input font-mono sec-wrong-input" step="1" placeholder="Auto" title="Automatically calculated: Attempted - Correct">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Unattempted</label>
+                  <input type="number" id="sec_quant_unattempted" class="text-input font-mono sec-unatt-input" placeholder="Auto" readonly tabindex="-1" title="Automatically calculated: Max Questions - Attempted">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Score</label>
+                  <input type="number" id="sec_quant_score" class="text-input font-mono sec-score-input" step="0.25" placeholder="Auto" title="Automatically calculated: Correct - (Wrong × 0.25)">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancelMockModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Mock</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Expanded Mock Detail View Modal -->
+  <div id="mockDetailModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 740px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: baseline; gap: 10px;">
+          <h3 id="mockDetailTitle" class="modal-title font-mono" style="font-size: 18px; font-weight: 800; letter-spacing: 0.04em;">MOCK DETAILS</h3>
+          <span id="mockDetailDate" class="font-mono text-muted" style="font-size: 12px;">Date</span>
+        </div>
+        <button id="closeMockDetailModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" style="gap: 20px;">
+        <!-- Top Summary Cards -->
+        <div class="detail-summary-grid">
+          <div class="detail-stat-card">
+            <span class="detail-stat-label">OVERALL SCORE</span>
+            <div id="detailOverallScore" class="detail-stat-value font-mono">— / —</div>
+            <span id="detailOverallPct" class="detail-stat-sub font-mono">—%</span>
+          </div>
+          <div class="detail-stat-card">
+            <span class="detail-stat-label">ATTEMPT RATE</span>
+            <div id="detailOverallAttemptRate" class="detail-stat-value font-mono">—</div>
+            <span id="detailOverallAttemptCounts" class="detail-stat-sub font-mono">—</span>
+          </div>
+          <div class="detail-stat-card">
+            <span class="detail-stat-label">ACCURACY</span>
+            <div id="detailOverallAccuracy" class="detail-stat-value font-mono">—</div>
+            <span id="detailOverallCorrectCounts" class="detail-stat-sub font-mono">—</span>
+          </div>
+        </div>
+
+        <!-- Sectional Performance -->
+        <div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <h4 style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Sectional Performance</h4>
+            <span style="font-size: 11px; color: var(--text-muted);">Independent scores & question metrics</span>
+          </div>
+          <div id="mockDetailSectionsGrid" class="detail-sections-grid"></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content: space-between;">
+        <button type="button" id="detailEditMockBtn" class="btn btn-secondary btn-sm">Edit This Mock</button>
+        <button type="button" id="detailCloseBtn" class="btn btn-primary btn-sm">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Error Modal -->
+  <div id="errorModal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="errorModalTitle" class="modal-title">Log Mistake in Error Notebook</h3>
+        <button id="closeErrorModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <form id="errorForm">
+        <div class="modal-body">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="errorSubjectSelect">Subject *</label>
+              <select id="errorSubjectSelect" class="select-input" required>
+                <option value="English">English</option>
+                <option value="GK">GK</option>
+                <option value="Legal" selected>Legal</option>
+                <option value="Logical">Logical</option>
+                <option value="Quant">Quant</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="errorMockRefInput">Mock Ref / Date <span class="form-label-optional">(optional)</span></label>
+              <input type="text" id="errorMockRefInput" class="text-input" placeholder="e.g. Mock 12">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="errorTopicInput">Topic / Question *</label>
+            <input type="text" id="errorTopicInput" class="text-input" placeholder="e.g. Void vs Voidable Contract" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="errorMistakeInput">What did I get wrong? *</label>
+            <textarea id="errorMistakeInput" class="textarea-input" placeholder="e.g. Selected voidable because I confused the legal effect..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="errorReasonInput">Why did I get it wrong? (Root Cause) *</label>
+            <textarea id="errorReasonInput" class="textarea-input" placeholder="e.g. Did not distinguish whether agreement is invalid ab initio or voidable at option..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="errorCorrectApproachInput">What should I have done/known? *</label>
+            <textarea id="errorCorrectApproachInput" class="textarea-input" placeholder="e.g. Review the legal distinction between void ab initio and voidable..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancelErrorModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Error Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add / Edit Sectional Error Modal -->
+  <div id="secErrorModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3 id="secErrorModalTitle" class="modal-title">Log Sectional Error Note</h3>
+        <button id="closeSecErrorModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <form id="secErrorForm">
+        <div class="modal-body">
+          <div class="form-row-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="secErrorDateInput">Date *</label>
+              <input type="date" id="secErrorDateInput" class="text-input font-mono" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="secErrorSectionSelect">Section *</label>
+              <select id="secErrorSectionSelect" class="select-input" required>
+                <option value="English">English</option>
+                <option value="GK">GK</option>
+                <option value="Legal" selected>Legal</option>
+                <option value="Logical">Logical</option>
+                <option value="Quant">Quant</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="secErrorStatusSelect">Revision Status *</label>
+              <select id="secErrorStatusSelect" class="select-input font-mono" required>
+                <option value="Unrevised" selected>Unrevised</option>
+                <option value="Revised">Revised</option>
+                <option value="Mastered">Mastered</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="secErrorTopicInput">Topic *</label>
+              <input type="text" id="secErrorTopicInput" class="text-input" placeholder="e.g. Law of Torts - Strict Liability" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="secErrorQTypeInput">Question / Type <span class="form-label-optional">(optional)</span></label>
+              <input type="text" id="secErrorQTypeInput" class="text-input" placeholder="e.g. Principle-Fact Application, Inference">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="secErrorMistakeTypeSelect">Mistake Type *</label>
+            <select id="secErrorMistakeTypeSelect" class="select-input" required>
+              <option value="Conceptual Error">Conceptual Error</option>
+              <option value="Misread Question / Fact">Misread Question / Fact</option>
+              <option value="Time Pressure / Rushed">Time Pressure / Rushed</option>
+              <option value="Silly Mistake / Calculation">Silly Mistake / Calculation</option>
+              <option value="Elimination Trap / Second Guessing">Elimination Trap / Second Guessing</option>
+              <option value="Negative Marking Trap">Negative Marking Trap</option>
+              <option value="Knowledge Gap">Knowledge Gap</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="secErrorMistakeInput">What did I get wrong? *</label>
+            <textarea id="secErrorMistakeInput" class="textarea-input" placeholder="e.g. Selected option B assuming strict liability has no exceptions..." required rows="2"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="secErrorReasonInput">Why I got it wrong (Root Cause) *</label>
+            <textarea id="secErrorReasonInput" class="textarea-input" placeholder="e.g. Rushed the question and overlooked the non-natural use criteria..." required rows="2"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="secErrorCorrectInput">Correct approach &amp; takeaway *</label>
+            <textarea id="secErrorCorrectInput" class="textarea-input" placeholder="e.g. Always check whether the activity qualifies under natural vs non-natural user before eliminating defenses..." required rows="2"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancelSecErrorModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%); border-color: rgba(56, 189, 248, 0.4);">Save Error Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Settings & Data Reset Modal -->
+  <div id="settingsModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 460px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Settings & Data Management</h3>
+        <button id="closeSettingsModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" style="gap: 20px;">
+        <!-- CLAT 2027 Target Exam Date Setting -->
+        <div id="clatSettingsGroup" class="settings-group" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <h4 style="font-size: 13px; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px; margin: 0;">
+              <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #8b5cf6; box-shadow: 0 0 10px rgba(139, 92, 246, 0.7);"></span>
+              CLAT 2027 Target Exam Date
+            </h4>
+            <span id="clatDDayPreviewPill" class="font-mono text-muted" style="font-size: 11px; background: rgba(255, 255, 255, 0.05); padding: 2px 8px; border-radius: 9999px; border: 1px solid var(--border-subtle);">D — ---</span>
+          </div>
+          <p class="text-muted" style="font-size: 12px; line-height: 1.4; margin-bottom: 12px;">
+            Set your target or announced CLAT 2027 examination date. The D-Day countdown updates automatically every day.
+          </p>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="date" id="clatExamDateInput" class="form-input font-mono" style="flex: 1; padding: 7px 12px; font-size: 13px;">
+            <button type="button" id="saveClatDateBtn" class="btn btn-primary btn-sm">Save</button>
+            <button type="button" id="clearClatDateBtn" class="btn btn-secondary btn-sm" title="Clear target date">Clear</button>
+          </div>
+          <div id="clatDateSaveStatus" class="font-mono" style="font-size: 11px; margin-top: 6px; min-height: 16px; color: var(--accent-emerald);"></div>
+        </div>
+
+        <div>
+          <h4 style="font-size: 13px; font-weight: 700; color: var(--text-bright); margin-bottom: 4px;">Data Storage</h4>
+          <p class="text-muted" style="font-size: 12px; line-height: 1.4;">
+            All your data is stored locally in this browser. Use <strong>Export Backup</strong> regularly to keep your study history safe across devices.
+          </p>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+          <h4 style="font-size: 13px; font-weight: 700; color: var(--text-bright); margin-bottom: 4px;">Sample Data & Reset</h4>
+          <p class="text-muted" style="font-size: 12px; margin-bottom: 12px;">
+            Load realistic sample data to see the charts in action, or clear all data to start fresh.
+          </p>
+          <div style="display: flex; gap: 8px; flex-direction: column;">
+            <button type="button" id="resetSampleDataBtn" class="btn btn-secondary" style="width: 100%;">
+              Reload Realistic Sample Data
+            </button>
+            <button type="button" id="resetEmptyDataBtn" class="btn btn-danger" style="width: 100%;">
+              Clear All Data (Start Fresh)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Tasks & Subtopics Modal -->
+  <div id="taskManagerModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 600px; width: 95vw;">
+      <div class="modal-header">
+        <h3 class="modal-title">Manage Study Tasks &amp; Subtopics</h3>
+        <button type="button" id="closeTaskManagerBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted" style="font-size: 12px; margin-bottom: 16px;">
+          Add, rename, or remove parent tasks and their specific subtopics. Past historical study records will remain intact with their existing names.
+        </p>
+        
+        <!-- Search / Filter Tasks & Subtopics -->
+        <div class="task-manager-search-box" style="position: relative; margin-bottom: 16px;">
+          <svg style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="taskSearchInput" class="text-input search-input" placeholder="Search tasks or subtopics (e.g. Legal, Torts, Quant)..." style="width: 100%; padding-left: 36px;">
+        </div>
+
+        <!-- Tasks Tree Container -->
+        <div id="taskManagerListContainer" class="task-manager-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="doneTaskManagerBtn" class="btn btn-secondary">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Custom Task Modal -->
+  <div id="taskModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Custom Study Task</h3>
+        <button type="button" id="closeTaskModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <form id="taskForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="taskNameInput">Task Name *</label>
+            <input type="text" id="taskNameInput" class="text-input" placeholder="e.g. Reading, Revision, Vocabulary..." required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancelTaskModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Study Checklist Add / Edit Task Modal -->
+  <div id="checklistModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Study Task">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h3 id="checklistModalTitle" class="modal-title">Add Study Task</h3>
+          <span class="modal-subtitle">Define today's goal, section &amp; subtopic</span>
+        </div>
+        <button type="button" id="closeChecklistModalBtn" class="modal-close-btn" aria-label="Close">&times;</button>
+      </div>
+      <form id="checklistForm" autocomplete="off">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="checklistTaskNameInput">Task / Goal Name <span style="color:var(--accent-rose)">*</span></label>
+            <input type="text" id="checklistTaskNameInput" class="text-input" placeholder="e.g. Complete Legal revision, 2 Logical Sectionals..." required>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="checklistCategorySelect">Subject / Category</label>
+              <select id="checklistCategorySelect" class="select-input">
+                <option value="">(Select Category)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="checklistSubtopicInput">Subtopic / Focus Area</label>
+              <input type="text" id="checklistSubtopicInput" class="text-input" placeholder="e.g. Contract Law, Reading Comp...">
+            </div>
+          </div>
+          <div id="checklistFormStatus" class="form-status-msg" style="min-height: 16px; font-size: 12px;"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancelChecklistModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="saveChecklistModalBtn" class="btn btn-primary">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Manual Time Log / Edit Session Modal -->
+  <div id="manualLogModal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 id="manualLogModalTitle" class="modal-title">Log Completed Study Time</h3>
+        <button type="button" id="closeManualLogBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <form id="manualLogForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="manualDateInput">Date *</label>
+            <input type="date" id="manualDateInput" class="text-input" required>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="manualTaskSelect">Task *</label>
+              <select id="manualTaskSelect" class="select-input" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="manualSubtaskSelect">Subtopic</label>
+              <select id="manualSubtaskSelect" class="select-input"></select>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="manualHoursInput">Hours</label>
+              <input type="number" id="manualHoursInput" class="text-input font-mono" min="0" max="24" value="1" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="manualMinutesInput">Minutes</label>
+              <input type="number" id="manualMinutesInput" class="text-input font-mono" min="0" max="59" value="0" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancelManualLogBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Time</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       DEDICATED FULLSCREEN TIMER OVERLAY (COUNTDOWN & STOPWATCH)
+       ===================================================================== -->
+  <div id="fullscreenTimerOverlay" class="fullscreen-timer-overlay" style="display: none;" role="dialog" aria-modal="true" aria-label="Fullscreen Study Timer">
+    <!-- Top Navigation / Context Bar -->
+    <div class="fs-top-bar">
+      <div class="fs-header-left">
+        <div class="fs-mode-switcher" role="tablist" aria-label="Timer Mode">
+          <button type="button" id="fsModeSwitchCountdown" class="fs-mode-pill active" title="Switch to Countdown">COUNTDOWN</button>
+          <button type="button" id="fsModeSwitchStopwatch" class="fs-mode-pill" title="Switch to Continuous Stopwatch">STOPWATCH</button>
+        </div>
+        <span id="fsTaskContext" class="fs-task-context font-mono">Studying: General</span>
+      </div>
+      <div class="fs-header-right">
+        <button type="button" id="exitFullscreenTimerBtn" class="fs-exit-btn" title="Exit Fullscreen (Esc)" aria-label="Exit Fullscreen">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          <span>Exit (Esc)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Center Stage: Countdown View -->
+    <div id="fsCountdownCenter" class="fs-center-container">
+      <div class="fs-ring-wrapper">
+        <svg class="fs-progress-svg" viewBox="0 0 440 440">
+          <defs>
+            <linearGradient id="fsCountdownGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="50%" stop-color="#818cf8" />
+              <stop offset="100%" stop-color="#c084fc" />
+            </linearGradient>
+            <filter id="fsGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="6" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- Background Track Ring -->
+          <circle class="fs-ring-track" cx="220" cy="220" r="180" />
+          <!-- Animated Depleting Progress Ring -->
+          <circle id="fsProgressRingCircle" class="fs-ring-progress" cx="220" cy="220" r="180" />
+        </svg>
+
+        <!-- Center Content Inside the Ring -->
+        <div class="fs-inner-content">
+          <span id="fsCountdownStatus" class="fs-status-pill font-mono status-ready">READY</span>
+          <div id="fsCountdownDigits" class="fs-hero-digits font-mono">25:00</div>
+          <span id="fsCountdownMeta" class="fs-meta-label font-mono">25 min focus session</span>
+        </div>
+      </div>
+
+      <!-- Controls below Countdown -->
+      <div class="fs-controls-bar">
+        <button type="button" id="fsCountdownStartBtn" class="btn btn-primary btn-fs-action btn-fs-start">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>START</span>
+        </button>
+        <button type="button" id="fsCountdownPauseBtn" class="btn btn-secondary btn-fs-action" style="display: none;">
+          <span>⏸ PAUSE</span>
+        </button>
+        <button type="button" id="fsCountdownResumeBtn" class="btn btn-primary btn-fs-action" style="display: none;">
+          <span>▶ RESUME</span>
+        </button>
+        <button type="button" id="fsCountdownResetBtn" class="btn btn-secondary btn-fs-action" title="Reset countdown to duration">
+          <span>↺ RESET</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Center Stage: Stopwatch View -->
+    <div id="fsStopwatchCenter" class="fs-center-container" style="display: none;">
+      <div class="fs-stopwatch-frame" id="fsStopwatchFrame">
+        <div class="fs-stopwatch-aura" aria-hidden="true"></div>
+        <div class="fs-stopwatch-inner">
+          <span id="fsStopwatchStatus" class="fs-status-pill font-mono status-ready">READY</span>
+          <div id="fsStopwatchDigits" class="fs-hero-digits font-mono fs-stopwatch-digits">00:00:00</div>
+          <span id="fsStopwatchMeta" class="fs-meta-label font-mono">Continuous Tracking</span>
+        </div>
+      </div>
+
+      <!-- Controls below Stopwatch -->
+      <div class="fs-controls-bar">
+        <button type="button" id="fsStopwatchStartBtn" class="btn btn-primary btn-fs-action btn-fs-start">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>START</span>
+        </button>
+        <button type="button" id="fsStopwatchPauseBtn" class="btn btn-secondary btn-fs-action" style="display: none;">
+          <span>⏸ PAUSE</span>
+        </button>
+        <button type="button" id="fsStopwatchResumeBtn" class="btn btn-primary btn-fs-action" style="display: none;">
+          <span>▶ RESUME</span>
+        </button>
+        <button type="button" id="fsStopwatchStopBtn" class="btn btn-danger btn-fs-action" style="display: none;">
+          <span>⏹ STOP &amp; SAVE</span>
+        </button>
+        <button type="button" id="fsStopwatchResetBtn" class="btn btn-secondary btn-fs-action" style="display: none;" title="Discard session without saving">
+          <span>↺ RESET</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom Keyboard Shortcut Hint -->
+    <div class="fs-footer-hint font-mono">
+      <span>Space: Start / Pause</span>
+      <span class="fs-hint-divider">•</span>
+      <span>Esc: Exit Fullscreen</span>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       1. VIEW SCHEDULE MODAL — Read-only Chronological Viewer
+       ========================================================= -->
+  <div id="mockViewScheduleModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Mock Schedule Timeline">
+    <div class="modal-dialog modal-dialog-wide">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 class="modal-title">Mock Schedule</h2>
+          <span class="modal-subtitle">Complete chronological mock timeline</span>
+        </div>
+        <div class="modal-header-actions">
+          <button type="button" id="closeViewScheduleModalBtn" class="modal-close-btn" aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body modal-body-scroll">
+        <div id="viewScheduleListContainer">
+          <!-- Rendered by MockScheduleManager.renderViewScheduleModal() -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="doneViewScheduleModalBtn" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       2. MANAGE SCHEDULE MODAL — Editable Management Interface
+       ========================================================= -->
+  <div id="mockManageScheduleModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Manage Mock Schedule">
+    <div class="modal-dialog modal-dialog-wide">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 class="modal-title">Manage Mock Schedule</h2>
+          <span class="modal-subtitle">Add, edit, or remove scheduled mocks</span>
+        </div>
+        <div class="modal-header-actions">
+          <button type="button" id="addScheduleMockBtn" class="btn btn-primary btn-sm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Mock
+          </button>
+          <button type="button" id="closeManageScheduleModalBtn" class="modal-close-btn" aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body modal-body-scroll">
+        <div id="manageScheduleListContainer">
+          <!-- Rendered by MockScheduleManager.renderManageScheduleModal() -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="doneManageScheduleModalBtn" class="btn btn-primary">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MOCK EDIT MODAL — Add or Edit a single scheduled mock
+       ========================================================= -->
+  <div id="mockEditModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Edit Scheduled Mock">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 id="mockEditModalTitle" class="modal-title">Add Scheduled Mock</h2>
+        </div>
+        <button type="button" id="closeEditModalBtn" class="modal-close-btn" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="mockEditForm" autocomplete="off">
+          <div class="form-group">
+            <label class="form-label" for="schedMockName">Mock Name <span style="color:var(--accent-rose)">*</span></label>
+            <input type="text" id="schedMockName" class="text-input" placeholder="e.g. Mock CLAT 47" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="schedMockInstitute">Institute / Source</label>
+            <input type="text" id="schedMockInstitute" class="text-input" placeholder="e.g. LegalEdge, Career Launcher, Self...">
+          </div>
+          <div class="form-row-two">
+            <div class="form-group">
+              <label class="form-label" for="schedMockDate">Date <span style="color:var(--accent-rose)">*</span></label>
+              <input type="date" id="schedMockDate" class="text-input font-mono" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="schedMockTime">Time (optional)</label>
+              <input type="text" id="schedMockTime" class="text-input" placeholder="e.g. 10:00 AM">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="schedMockNotes">Notes (optional)</label>
+            <input type="text" id="schedMockNotes" class="text-input" placeholder="Any notes or context">
+          </div>
+          <div id="mockEditStatus" class="form-status-msg" style="min-height:18px; font-size:12px;"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="cancelEditModalBtn" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="saveEditModalBtn" class="btn btn-primary">Save Mock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/countdown.js"></script>
+  <script src="js/fullscreenTimer.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/mocks.js"></script>
+  <script src="js/errors.js"></script>
+  <script src="js/study.js"></script>
+  <script src="js/streak.js"></script>
+  <script src="js/weakness.js"></script>
+  <script src="js/sectionals.js"></script>
+  <script src="js/sectionalErrors.js"></script>
+  <script src="js/sectionalWeakness.js"></script>
+  <script src="js/mockSchedule.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

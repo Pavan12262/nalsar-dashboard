@@ -1,0 +1,591 @@
+/* ==========================================================================
+   MY PREP DASHBOARD - RESPONSIVE STYLESHEET
+   Desktop, Laptop, Tablet, and Mobile Adaptations
+   ========================================================================== */
+
+/* Laptop / Intermediate Screen (<= 1100px) */
+@media (max-width: 1100px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dual-timers-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .streak-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .weekly-bars-container {
+    height: 160px;
+  }
+}
+
+/* Tablet (<= 860px) */
+@media (max-width: 860px) {
+  .header-inner {
+    height: auto;
+    padding: 14px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .nav-pills {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    justify-content: flex-start;
+    padding: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .study-overview-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .error-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .error-filter-tabs {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .error-search-box {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .error-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectional-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sec-fields-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .detail-summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hero-timer-card {
+    padding: 32px 24px;
+  }
+
+  .clat-countdown-card {
+    padding: 14px 20px;
+  }
+
+  .clat-d-number {
+    font-size: 34px;
+  }
+
+  .weakness-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .sec-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sec-date-control-panel {
+    justify-content: space-between;
+  }
+
+  /* Sectional Weakness & Error Log Tablet */
+  .sec-weakness-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .sec-error-filter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .sec-error-filter-row-split {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sec-error-search-box {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .sec-error-pills-wrap,
+  .sec-status-pills-wrap {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+
+}
+
+
+/* Mobile (<= 580px) */
+@media (max-width: 580px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .brand-title {
+    font-size: 15px;
+    gap: 4px;
+  }
+
+  .target-kicker {
+    font-size: 10px;
+  }
+
+  .target-main {
+    font-size: 18px;
+  }
+
+  .nav-pill {
+    padding: 6px 14px;
+    font-size: 11px;
+  }
+
+  .overview-stat-value {
+    font-size: 34px;
+  }
+
+  .streak-hero-card {
+    padding: 36px 16px;
+  }
+
+  .streak-hero-digits {
+    font-size: 76px;
+  }
+
+  .streak-hero-unit {
+    font-size: 22px;
+  }
+
+  .streak-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .streak-stat-box {
+    padding: 14px 12px;
+  }
+
+  .streak-stat-value {
+    font-size: 17px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .chart-controls-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .chart-tabs {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .chart-meta-bar {
+    gap: 16px;
+    padding: 10px 14px;
+  }
+
+  .stat-val {
+    font-size: 14px;
+  }
+
+  .hero-timer-card {
+    padding: 26px 16px;
+    border-radius: var(--radius-lg);
+  }
+
+  .hero-digits {
+    font-size: 52px;
+  }
+
+  .timer-digits-display {
+    font-size: 40px;
+  }
+
+  .hero-timer-card .hero-digits-wrap {
+    min-height: 120px;
+    padding: 20px 0;
+    margin: 8px 0 16px;
+  }
+
+  .hero-timer-card .hero-digits-wrap::after {
+    width: min(360px, 94%);
+    height: 96px;
+  }
+
+  .hero-timer-card .hero-digits-wrap::before {
+    width: min(380px, 98%);
+    height: 108px;
+  }
+
+  .hero-timer-card #timerDigits {
+    font-size: clamp(30px, 7vw, 44px);
+  }
+
+  .hero-selectors-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .btn-hero-start {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+
+  .hero-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-controls .btn {
+    width: 100%;
+  }
+
+  .history-date-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .hist-nav-group {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .sectional-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-dialog {
+    margin: 10px;
+    max-height: 94vh;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+  }
+
+  .modal-body {
+    padding: 18px 20px;
+  }
+
+  .modal-footer {
+    padding: 14px 20px;
+  }
+
+  .sec-fields-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .detail-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .detail-sec-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .detail-sec-rates-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .clat-countdown-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px 14px;
+    gap: 12px;
+  }
+
+  .clat-card-pill {
+    order: 1;
+  }
+
+  .clat-dday-display {
+    order: 2;
+  }
+
+  .clat-d-number {
+    font-size: 30px;
+    min-width: auto;
+    text-align: center;
+  }
+
+  .clat-date-wrapper {
+    order: 3;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .clat-date-meta {
+    align-items: center;
+    text-align: center;
+  }
+
+  .weakness-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .weakness-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .weakness-subject-title {
+    font-size: 13px;
+  }
+
+  .priority-topic-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .priority-topic-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Sectionals Mobile */
+  .sec-comp-row {
+    grid-template-columns: 1fr auto;
+    row-gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .sec-comp-middle {
+    grid-column: 1 / -1;
+    order: 3;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.06);
+  }
+
+  .sec-comp-status {
+    order: 2;
+  }
+
+  .sec-inputs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sec-entry-card {
+    padding: 16px;
+  }
+
+  .sec-progress-card {
+    padding: 16px;
+  }
+
+  .sec-date-control-panel {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .sec-quick-date-pills {
+    justify-content: center;
+  }
+
+  .sec-stepper-group {
+    justify-content: center;
+  }
+
+  .sec-date-picker {
+    flex: 1;
+  }
+
+  /* Sectional Weakness & Error Log Mobile */
+  .sec-err-stat-chips {
+    gap: 8px;
+    width: 100%;
+  }
+
+  .sec-stat-chip {
+    flex: 1 1 calc(50% - 6px);
+    justify-content: space-between;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  .sec-err-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .sec-err-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sec-err-blocks-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .sec-topics-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+}
+
+/* ==========================================================================
+   RESPONSIVE WELCOME SCREEN (TABLET & MOBILE)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .welcome-corner-tl {
+    top: 24px;
+    left: 24px;
+  }
+  .welcome-corner-tr {
+    top: 24px;
+    right: 24px;
+  }
+  .welcome-corner-bl {
+    bottom: 24px;
+    left: 24px;
+  }
+  .welcome-corner-br {
+    bottom: 24px;
+    right: 24px;
+  }
+  .welcome-main-title {
+    font-size: clamp(3rem, 11vw, 4.5rem);
+    margin-bottom: 12px;
+  }
+  .welcome-subtitle {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    margin-bottom: 28px;
+  }
+  .btn-welcome-lockin {
+    min-width: 190px;
+    height: 46px;
+    padding: 0 28px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-corner-tl {
+    top: 18px;
+    left: 18px;
+  }
+  .welcome-corner-bl {
+    bottom: 18px;
+    left: 18px;
+  }
+  .welcome-corner-tr,
+  .welcome-corner-br {
+    display: none;
+  }
+  .welcome-main-title {
+    font-size: 2.8rem;
+  }
+}
+
+/* Fullscreen Timer Responsive */
+@media (max-width: 640px) {
+  .fullscreen-timer-overlay {
+    padding: 16px 16px 14px;
+  }
+  .fs-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .fs-header-left {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .fs-header-right {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+  }
+  .fs-exit-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+  .fs-center-container {
+    gap: 20px;
+  }
+  .fs-ring-wrapper {
+    width: min(320px, 82vw);
+    height: min(320px, 82vw);
+  }
+  .fs-stopwatch-frame {
+    width: min(540px, 92vw);
+    height: 250px;
+  }
+  .fs-stopwatch-frame::before {
+    border-radius: 36px;
+  }
+  .fs-stopwatch-aura {
+    border-radius: 42px;
+  }
+  .fs-hero-digits {
+    font-size: clamp(42px, 11vw, 70px);
+  }
+  .fs-stopwatch-digits {
+    font-size: clamp(34px, 8vw, 56px);
+  }
+  .btn-fs-action {
+    padding: 10px 22px;
+    font-size: 13px;
+  }
+}
+
+
+
+
+
